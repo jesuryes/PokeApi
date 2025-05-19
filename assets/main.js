@@ -10,7 +10,7 @@ let allPokemon = [];
 let currentStart = 1;
 const PAGE_SIZE = 20;
 
-// Colores por tipo ratooooonn
+// Colores por tipo ratooon
 const typeColors = {
   normal: "#A8A77A",
   fire: "#EE8130",
@@ -50,7 +50,12 @@ const loadAllPokemon = async () => {
       image: data.sprites.other['official-artwork'].front_default,
       types: data.types.map(t => t.type.name),
       height: data.height / 10,
-      weight: data.weight / 10
+      weight: data.weight / 10,
+      abilities: data.abilities.map(a => a.ability.name),
+      stats: data.stats.map(s => ({
+        name: s.stat.name,
+        value: s.base_stat
+      }))
     });
   }
   displayPokemon();
@@ -65,7 +70,6 @@ const displayPokemon = () => {
     const card = document.createElement('div');
     card.classList.add('card');
 
-    // Fondo dinámico por tipo principal
     const typeColor = getTypeColor(pokemon.types[0]);
     card.style.background = `linear-gradient(145deg, ${typeColor}, #ffffff)`;
 
@@ -85,6 +89,14 @@ const getFilteredPokemon = () => {
 };
 
 const showDetails = (pokemon) => {
+  const typeColor = getTypeColor(pokemon.types[0]);
+
+  const statsHTML = pokemon.stats.map(stat =>
+    `<li><strong>${capitalize(stat.name)}:</strong> ${stat.value}</li>`
+  ).join('');
+
+  const abilitiesHTML = pokemon.abilities.map(a => capitalize(a)).join(', ');
+
   modalBody.innerHTML = `
     <h2>${capitalize(pokemon.name)}</h2>
     <img src="${pokemon.image}" alt="${pokemon.name}" />
@@ -92,7 +104,19 @@ const showDetails = (pokemon) => {
     <p><strong>Tipo:</strong> ${pokemon.types.join(', ')}</p>
     <p><strong>Altura:</strong> ${pokemon.height} m</p>
     <p><strong>Peso:</strong> ${pokemon.weight} kg</p>
+    <p><strong>Habilidades:</strong> ${abilitiesHTML}</p>
+    <h3>Estadísticas:</h3>
+    <ul style="list-style: none; padding: 0; text-align: left;">
+      ${statsHTML}
+    </ul>
   `;
+
+  modalBody.style.background = `linear-gradient(145deg, ${typeColor}, #ffffff)`;
+  modalBody.style.borderRadius = '14px';
+  modalBody.style.padding = '1rem';
+  modalBody.style.color = '#fff';
+  modalBody.style.textShadow = '0 1px 2px rgba(0,0,0,0.6)';
+
   modal.classList.remove('hidden');
 };
 
